@@ -11,9 +11,27 @@ from urllib.parse import urlparse  # noqa: F401
 from urllib.request import urlopen, Request
 
 import torch
+import torchvision.transforms.functional as TF
 
 
-def download_url_to_file(url, dst, hash_prefix=None, progress=True):
+def size_round(im):
+    h, w, _ = im.shape
+    nh = int(h // 8 * 8)
+    nw = int(w // 8 * 8)
+    im_new = TF.resize(Image.fromarray(im), (nh, nw), interpolation=TF.InterpolationMode.BILINEAR)
+    return np.array(im_new)
+
+
+def numpy_to_tensor(im):
+    return torch.from_numpy(im).unsqueeze(0).permute(0, 3, 1, 2).float() / 255.
+
+
+def tensor_to_numpy(im):
+    return im.detach().cpu().squeeze(0).mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu',
+                                                                                              torch.uint8).numpy()
+
+
+def download_url_to_file(url, dst=None, hash_prefix=None, progress=True):
     file_size = None
     # We use a different API for python2 since urllib(2) doesn't recognize the CA
     # certificates in older Python
@@ -30,6 +48,9 @@ def download_url_to_file(url, dst, hash_prefix=None, progress=True):
     # We deliberately save it in a temp file and move it after
     # download is complete. This prevents a local working checkpoint
     # being overridden by a broken download.
+    if dst is None:
+        dst = os.path.basename(url)
+
     dst = os.path.expanduser(dst)
     dst_dir = os.path.dirname(dst)
     f = tempfile.NamedTemporaryFile(delete=False, dir=dst_dir)
@@ -92,7 +113,7 @@ def locate_resource(name):
     if os.path.isfile(default_path):
         return default_path
     else:
-        return 'https://github.com/mingcv/Bread_Colab/raw/main/images/' + name
+        return 'https://github.com/mingcv/Bread_Colab/raw/main/' + name
 
 
 def enable_plotly_in_cell():
