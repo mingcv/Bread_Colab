@@ -86,25 +86,13 @@ def imshow(image, click_event=None, cmap=None):
     return fig, ax
 
 
-def get_sed_model_file():
-    import os.path
-    default_path = 'data/opencv_sed_model.yml.gz'
-    if os.path.isfile(default_path):
-        return default_path
-    else:
-        import urllib.request as request
-        dl_path = './opencv_sed_model.yml.gz'
-        request.urlretrieve('https://github.com/higra/Higra-Notebooks/raw/master/data/opencv_sed_model.yml.gz', dl_path)
-        return dl_path
-
-
 def locate_resource(name):
     import os.path
     default_path = 'data/' + name
     if os.path.isfile(default_path):
         return default_path
     else:
-        return 'https://github.com/higra/Higra-Notebooks/raw/master/data/' + name
+        return 'https://github.com/mingcv/Bread_Colab/raw/main/images/' + name
 
 
 def enable_plotly_in_cell():
