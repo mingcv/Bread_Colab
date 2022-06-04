@@ -5,12 +5,12 @@ import re
 import shutil
 import sys
 import tempfile
-import torch
 import warnings
 import zipfile
-
-from urllib.request import urlopen, Request
 from urllib.parse import urlparse  # noqa: F401
+from urllib.request import urlopen, Request
+
+import torch
 
 
 def download_url_to_file(url, dst, hash_prefix=None, progress=True):
