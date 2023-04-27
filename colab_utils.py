@@ -17,10 +17,10 @@ import torchvision.transforms.functional as TF
 def size_round(im, max_len=1536):
     h, w, _ = im.shape
     if max(h, w) > max_len:
-        nh = max_len
-        nw = max_len / h * w
-    nh = int(nh // 8 * 8)
-    nw = int(nw // 8 * 8)
+        h = max_len
+        w = int(max_len / h * w)
+    nh = int(h // 8 * 8)
+    nw = int(w // 8 * 8)
     im_new = TF.resize(Image.fromarray(im), (nh, nw), interpolation=TF.InterpolationMode.BILINEAR)
     return np.array(im_new)
 
